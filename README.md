@@ -6,10 +6,13 @@ native PC_RegAlias(const cmd[], const alias[], ...);
 native PC_SetFlags(const cmd[], flags);
 native PC_GetFlags(const cmd[]);
 native PC_RenameCommand(const cmd[], const newname[]);
+native PC_SetCommandDesc(const cmd[], const description[]);
+native PC_GetCommandDesc(const cmd[], dest[], size = sizeof dest);
 native PC_CommandExists(const cmd[]);
 native PC_DeleteCommand(const cmd[]);
 
 native CmdArray:PC_GetCommandArray();
+native CmdArray:PC_GetCommandArrayByFlags(flags, bool:match_all = true);
 native CmdArray:PC_GetAliasArray(const cmd[]);
 native PC_GetArraySize(CmdArray:arr);
 native PC_GetCommandName(CmdArray:arr, index, dest[], size = sizeof dest);
@@ -24,14 +27,22 @@ forward OnPlayerCommandReceived(playerid, cmd[], params[], flags);
 forward OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags);
 ```
 ## How to install
-Extract the archive in your server folder. Place .dll/.so inside **components** folder. Update your server.cfg/config.json
-
-## Configuration (pawncmd.cfg in components folder)
+Extract archive in server folder. Update your server.cfg
+- Windows
+```
+plugins pawncmd.dll
+```
+- Linux
+```
+plugins pawncmd.so
+```
+## Configuration (pawncmd.cfg in plugins folder)
 **The values in parentheses are default values**
 * CaseInsensitivity (**true**)
 * LegacyOpctSupport (**true**)
 * LocaleName (**"C"**)
 * UseCaching (**true**)
+* LogAmxErrors (**true**)
 ## Example command
 ```pawn
 #include <Pawn.CMD>
@@ -40,6 +51,26 @@ cmd:help(playerid, params[]) // you can also use 'CMD' or 'COMMAND' instead of '
 {
   // code here
   return 1;
+}
+```
+## Command description
+```pawn
+cmd:kick(playerid, params[])
+{
+  // code here
+  return 1;
+}
+desc:kick("kicks a player from the server")
+
+// get the description of a command
+cmd:kickdesc(playerid, params[])
+{
+	new description[128];
+
+	// get command description
+	PC_GetCommandDesc("kick", description, sizeof description);
+
+	printf("The description of the /kick command is: %s", description);
 }
 ```
 ## Registering aliases
