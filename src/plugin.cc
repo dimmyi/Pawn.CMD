@@ -33,10 +33,13 @@ bool Plugin::OnLoad() {
   RegisterNative<&Script::PC_SetFlags>("PC_SetFlags");
   RegisterNative<&Script::PC_GetFlags>("PC_GetFlags");
   RegisterNative<&Script::PC_RenameCommand>("PC_RenameCommand");
+  RegisterNative<&Script::PC_SetCommandDesc>("PC_SetCommandDesc");
+  RegisterNative<&Script::PC_GetCommandDesc>("PC_GetCommandDesc");
   RegisterNative<&Script::PC_CommandExists>("PC_CommandExists");
   RegisterNative<&Script::PC_DeleteCommand>("PC_DeleteCommand");
 
   RegisterNative<&Script::PC_GetCommandArray>("PC_GetCommandArray");
+  RegisterNative<&Script::PC_GetCommandArrayByFlags>("PC_GetCommandArrayByFlags");
   RegisterNative<&Script::PC_GetAliasArray>("PC_GetAliasArray");
   RegisterNative<&Script::PC_GetArraySize>("PC_GetArraySize");
   RegisterNative<&Script::PC_GetCommandName>("PC_GetCommandName");

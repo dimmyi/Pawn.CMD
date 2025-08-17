@@ -52,6 +52,12 @@ class Script : public ptl::AbstractScript<Script> {
   // native PC_RenameCommand(const cmd[], const newname[]);
   cell PC_RenameCommand(std::string cmd_name, std::string cmd_newname);
 
+  // native PC_SetCommandDesc(const cmd[], const description[]);
+  cell PC_SetCommandDesc(std::string cmd_name, std::string cmd_desc);
+
+  // native PC_GetCommandDesc(const cmd[], dest[], size = sizeof dest);
+  cell PC_GetCommandDesc(std::string cmd_name, cell* dest, cell size);
+
   // native PC_CommandExists(const cmd[]);
   cell PC_CommandExists(std::string cmd_name);
 
@@ -60,6 +66,9 @@ class Script : public ptl::AbstractScript<Script> {
 
   // native CmdArray:PC_GetCommandArray();
   cell PC_GetCommandArray();
+
+  // native CmdArray:PC_GetCommandArrayByFlags(flags, bool:match_all = true);
+  cell PC_GetCommandArrayByFlags(cell flags, cell match_all);
 
   // native CmdArray:PC_GetAliasArray(const cmd[]);
   cell PC_GetAliasArray(std::string cmd_name);
@@ -106,6 +115,7 @@ class Script : public ptl::AbstractScript<Script> {
   const std::regex regex_public_cmd_name_{R"(pc_cmd_(\w+))"};
   const std::regex regex_public_cmd_alias_{R"(pc_alias_\w+)"};
   const std::regex regex_public_cmd_flags_{R"(pc_flags_\w+)"};
+  const std::regex regex_public_cmd_desc_{R"(pc_desc_\w+)"};
 
   std::unordered_map<std::string, CommandPtr> cmds_;
   PublicPtr opct_public_;     // OnPlayerCommandText

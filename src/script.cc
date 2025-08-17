@@ -86,6 +86,39 @@ cell Script::PC_RenameCommand(std::string cmd_name, std::string cmd_newname) {
   return 1;
 }
 
+// native PC_SetCommandDesc(const cmd[], const description[]);
+cell Script::PC_SetCommandDesc(std::string cmd_name, std::string desc) {
+    cmd_name = PrepareCommandName(cmd_name);
+
+    auto& command = GetCommand(cmd_name);
+
+    for (const auto& item : cmds_) {
+        if (item.second->GetPublic() == command->GetPublic()) {
+            item.second->SetDesc(desc);
+        }
+    }
+
+    return 1;
+}
+
+// native PC_GetCommandDesc(const cmd[], dest[], size = sizeof dest);
+cell Script::PC_GetCommandDesc(std::string cmd_name, cell* dest, cell size) {
+    cmd_name = PrepareCommandName(cmd_name);
+
+    auto& command = GetCommand(cmd_name);
+
+    const std::string& d = command->GetDesc();
+
+    if (d.empty()) {
+        SetString(dest, "N/A", size);
+        return 0;
+    }
+
+    SetString(dest, d.c_str(), size);
+
+    return 1;
+}
+
 // native PC_CommandExists(const cmd[]);
 cell Script::PC_CommandExists(std::string cmd_name) {
   cmd_name = PrepareCommandName(cmd_name);
@@ -155,6 +188,8 @@ bool Script::OnLoad() {
     } else if (std::regex_match(public_name, regex_public_cmd_alias_)) {
       init_flags_and_aliases_pubs_.push_back(MakePublic(public_name));
     } else if (std::regex_match(public_name, regex_public_cmd_flags_)) {
+      init_flags_and_aliases_pubs_.push_front(MakePublic(public_name));
+    } else if (std::regex_match(public_name, regex_public_cmd_desc_)) {
       init_flags_and_aliases_pubs_.push_front(MakePublic(public_name));
     } else if (plugin.LegacyOpctSupport() &&
                public_name == "OnPlayerCommandText") {
@@ -257,6 +292,31 @@ cell Script::NewCmdArray() {
   cmd_arrays_.insert(arr);
 
   return reinterpret_cast<cell>(arr.get());
+}
+
+// native CmdArray:PC_GetCommandArrayByFlags(flags, bool:match_all = true);
+cell Script::PC_GetCommandArrayByFlags(cell flags, cell match_all) {
+    auto arr = std::make_shared<CmdArray>();
+
+    for (const auto& item : cmds_) {
+        const auto& cmd = item.second;
+
+        if (cmd->IsAlias()) {
+            continue;
+        }
+
+        const unsigned int f = cmd->GetFlags();
+        const bool ok = match_all ? 
+            ((f & static_cast<unsigned int>(flags)) == static_cast<unsigned int>(flags)) : ((f & static_cast<unsigned int>(flags)) != 0);
+
+        if (ok) {
+            arr->push_back(item.first);
+        }
+    }
+
+    cmd_arrays_.insert(arr);
+
+    return reinterpret_cast<cell>(arr.get());
 }
 
 cell Script::NewAliasArray(const std::string &cmd_name) {

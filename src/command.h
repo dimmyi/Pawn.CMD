@@ -40,10 +40,14 @@ class Command {
 
   inline bool IsAlias() const { return is_alias_; }
 
+  void SetDesc(const std::string& d) { desc_ = d; }
+  const std::string& GetDesc() const { return desc_; }
+
  private:
   PublicPtr public_;
   unsigned int flags_{};
   bool is_alias_{};
+  std::string desc_;
 };
 
 #endif  // PAWNCMD_COMMAND_H_

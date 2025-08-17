@@ -45,10 +45,13 @@
         native PC_SetFlags(const cmd[], flags);
         native PC_GetFlags(const cmd[]);
         native PC_RenameCommand(const cmd[], const newname[]);
+        native PC_SetCommandDesc(const cmd[], const description[]);
+        native PC_GetCommandDesc(const cmd[], dest[], size = sizeof dest);
         native PC_CommandExists(const cmd[]);
         native PC_DeleteCommand(const cmd[]);
 
         native CmdArray:PC_GetCommandArray();
+        native CmdArray:PC_GetCommandArrayByFlags(flags, bool:match_all = true);
         native CmdArray:PC_GetAliasArray(const cmd[]);
         native PC_GetArraySize(CmdArray:arr);
         native PC_GetCommandName(CmdArray:arr, index, dest[], size = sizeof dest);
@@ -81,6 +84,11 @@
             forward pc_flags_%0(); \
             public pc_flags_%0() \
                 PC_SetFlags(#%0, %1);
+
+        #define desc:%0(%1) \
+            forward pc_desc_%0(); \
+            public pc_desc_%0() \
+                PC_SetCommandDesc(#%0, %1);
 
         #define CMD cmd
         #define COMMAND cmd
